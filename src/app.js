@@ -80,6 +80,30 @@ app.use((req, res, next) => {
 // JSON parsing middleware
 app.use(express.json());
 
+/**
+ * GET /
+ * API endpoint with system information (JSON)
+ * 
+ * Purpose: Provides system info in JSON format for API clients.
+ * The visual dashboard can be accessed via /dashboard or served as static HTML.
+ */
+app.get('/', (req, res) => {
+  res.json({
+    application: 'Anti-Gravity DevOps Platform',
+    version: '1.0.0',
+    description: 'Self-healing, auto-scaling, fault-tolerant infrastructure',
+    hostname: HOSTNAME,
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      load: '/load',
+      metrics: '/metrics',
+      ready: '/ready',
+      api: '/api'
+    }
+  });
+});
+
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
