@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<!-- ![Anti-Gravity Dashboard](public/thumbnail.png) -->
+
 ![Anti-Gravity DevOps Platform](https://img.shields.io/badge/DevOps-Platform-blueviolet?style=for-the-badge&logo=kubernetes)
 ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
@@ -28,6 +30,19 @@ I created the **Anti-Gravity DevOps Platform** to:
 - **Demystify Kubernetes** — Show that K8s isn't just buzzword technology, but a practical tool for building resilient systems
 
 The name "Anti-Gravity" comes from the core concept: just as gravity constantly pulls objects down, system failures, traffic spikes, and resource exhaustion constantly threaten to bring down your applications. This platform demonstrates how modern DevOps practices create an "anti-gravity" force that **automatically resists and recovers from failures**.
+
+---
+
+## 🌟 Why Use This Project?
+
+Unlike standard "Hello World" tutorials, this project simulates a **real-world production environment**:
+
+- **It Breaks on Purpose**: Includes chaos engineering scripts to crash pods and spike CPU.
+- **It Fixes Itself**: Watch Kubernetes automatically restart crashed pods and scale up for load.
+- **It's Observable**: Pre-configured Prometheus and Grafana dashboards let you _see_ the metrics.
+- **It's Complete**: From CI/CD pipelines to Ingress controllers, every piece of the puzzle is here.
+
+> "The best way to learn DevOps is to break things and watch them fix themselves."
 
 ---
 

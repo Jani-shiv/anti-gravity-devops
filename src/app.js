@@ -80,6 +80,17 @@ app.use((req, res, next) => {
 // JSON parsing middleware
 app.use(express.json());
 
+// CORS middleware - Allow requests from file:// protocol and any origin
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 /**
  * GET /
  * API endpoint with system information (JSON)
