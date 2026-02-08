@@ -4,7 +4,10 @@
  */
 
 // Configuration
-const API_BASE = window.location.origin;
+// Handle both file:// protocol (direct file viewing) and http:// (server)
+const API_BASE = window.location.protocol === 'file:' 
+    ? 'http://localhost:3000' 
+    : window.location.origin;
 let selectedDuration = 5;
 let requestCount = 0;
 
