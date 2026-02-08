@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Demo - Anti-Gravity DevOps Platform</title>
+    <meta name="description" content="Interactive demonstration of self-healing Kubernetes infrastructure">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Demo Page Specific Styles */
+        .demo-nav {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .demo-nav a {
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .demo-nav a:hover, .demo-nav a.active {
+            background: var(--gradient-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .demo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .demo-description {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+            line-height: 1.8;
+        }
+
+        .demo-steps {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .demo-step {
+            display: flex;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--accent-primary);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            margin-bottom: var(--space-sm);
+            font-size: 1.1rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .demo-code {
+            background: #1a1a2e;
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-top: var(--space-md);
+            overflow-x: auto;
+        }
+
+        .demo-code pre {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-tertiary);
+            margin: 0;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .scenario-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+
+        .scenario-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .scenario-card h4 {
+            margin-bottom: var(--space-sm);
+        }
+
+        .scenario-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .scenario-result {
+            padding: var(--space-sm) var(--space-md);
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: var(--radius-sm);
+            color: var(--accent-success);
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .live-terminal {
+            background: #0d0d0d;
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            margin-bottom: var(--space-sm);
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .terminal-prompt {
+            color: var(--accent-success);
+        }
+
+        .terminal-command {
+            color: var(--text-primary);
+        }
+
+        .terminal-output {
+            color: var(--text-secondary);
+            margin-left: var(--space-lg);
+        }
+
+        .copy-btn {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .video-placeholder {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .video-placeholder .icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-md);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="demo-nav">
+            <a href="index.html">🏠 Dashboard</a>
+            <a href="demo.html" class="active">🎬 Live Demo</a>
+            <a href="learn.html">📚 Learn</a>
+            <a href="/api" target="_blank">🔌 API</a>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero" style="padding: var(--space-xl) 0;">
+            <h2 class="hero-title">
+                <span class="gradient-text">🎬 Live Demo</span>
+            </h2>
+            <p class="hero-subtitle">
+                See Anti-Gravity in action with real-world failure scenarios
+            </p>
+        </section>
+
+        <!-- Quick Start Demo -->
+        <section class="demo-section">
+            <h3 class="demo-title">🚀 Quick Start in 30 Seconds</h3>
+            <p class="demo-description">
+                Get the platform running locally with just 3 commands. No Kubernetes required for the basic demo!
+            </p>
+
+            <div class="demo-steps">
+                <div class="demo-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Clone & Install</h4>
+                        <p>Get the code and install dependencies</p>
+                        <div class="demo-code">
+                            <pre>git clone https://github.com/Jani-shiv/anti-gravity-devops.git
+cd anti-gravity-devops
+npm install</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Start the Server</h4>
+                        <p>Launch the Anti-Gravity platform</p>
+                        <div class="demo-code">
+                            <pre>npm start</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Open Dashboard</h4>
+                        <p>Visit the platform in your browser</p>
+                        <div class="demo-code">
+                            <pre>http://localhost:3000</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Failure Scenarios -->
+        <section class="demo-section">
+            <h3 class="demo-title">💥 Failure Scenarios (Chaos Engineering)</h3>
+            <p class="demo-description">
+                These scenarios demonstrate how the platform automatically recovers from failures. 
+                In Kubernetes, these would trigger automatic pod restarts and scaling.
+            </p>
+
+            <div class="demo-grid">
+                <div class="scenario-card">
+                    <div class="scenario-icon">🔥</div>
+                    <h4>Pod Crash Simulation</h4>
+                    <p>Delete a pod and watch Kubernetes instantly create a replacement. Zero downtime!</p>
+                    <div class="demo-code">
+                        <pre>kubectl delete pod -n anti-gravity \
+  -l app=anti-gravity --force</pre>
+                    </div>
+                    <div class="scenario-result">✅ New pod ready in ~3 seconds</div>
+                </div>
+
+                <div class="scenario-card">
+                    <div class="scenario-icon">📈</div>
+                    <h4>CPU Spike (Auto-Scale)</h4>
+                    <p>Generate load to trigger HPA. Watch pods scale from 2 to 10 automatically!</p>
+                    <div class="demo-code">
+                        <pre>curl "http://localhost:3000/load?duration=20"</pre>
+                    </div>
+                    <div class="scenario-result">✅ HPA scales pods automatically</div>
+                </div>
+
+                <div class="scenario-card">
+                    <div class="scenario-icon">🔀</div>
+                    <h4>Rolling Update</h4>
+                    <p>Deploy a new version with zero downtime using Kubernetes rolling updates.</p>
+                    <div class="demo-code">
+                        <pre>kubectl set image deployment/anti-gravity \
+  app=ghcr.io/user/app:v2</pre>
+                    </div>
+                    <div class="scenario-result">✅ Zero-downtime deployment</div>
+                </div>
+
+                <div class="scenario-card">
+                    <div class="scenario-icon">💾</div>
+                    <h4>Memory Pressure</h4>
+                    <p>Resource limits prevent memory leaks from crashing the entire node.</p>
+                    <div class="demo-code">
+                        <pre># Configured in deployment.yaml
+resources:
+  limits:
+    memory: "256Mi"</pre>
+                    </div>
+                    <div class="scenario-result">✅ Container restarts, node safe</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Terminal -->
+        <section class="demo-section">
+            <h3 class="demo-title">💻 Live Commands</h3>
+            <p class="demo-description">
+                Try these commands in your terminal to interact with the platform:
+            </p>
+
+            <div class="live-terminal" id="terminal">
+                <div class="terminal-line">
+                    <span class="terminal-prompt">$</span>
+                    <span class="terminal-command">curl http://localhost:3000/health</span>
+                </div>
+                <div class="terminal-output">{"status":"healthy","hostname":"local","uptime":1234.56}</div>
+
+                <div class="terminal-line">
+                    <span class="terminal-prompt">$</span>
+                    <span class="terminal-command">curl http://localhost:3000/load?duration=5</span>
+                </div>
+                <div class="terminal-output">{"status":"completed","duration":5.01,"iterations":847293}</div>
+
+                <div class="terminal-line">
+                    <span class="terminal-prompt">$</span>
+                    <span class="terminal-command">kubectl get pods -n anti-gravity -w</span>
+                </div>
+                <div class="terminal-output">NAME                           READY   STATUS    RESTARTS   AGE
+anti-gravity-7d8f6b9c4-abc12   1/1     Running   0          2m
+anti-gravity-7d8f6b9c4-def34   1/1     Running   0          2m</div>
+
+                <div class="terminal-line">
+                    <span class="terminal-prompt">$</span>
+                    <span class="terminal-command">kubectl get hpa -n anti-gravity</span>
+                </div>
+                <div class="terminal-output">NAME           REFERENCE                 TARGETS   MINPODS   MAXPODS   REPLICAS
+anti-gravity   Deployment/anti-gravity   25%/50%   2         10        2</div>
+            </div>
+        </section>
+
+        <!-- Kubernetes Deployment -->
+        <section class="demo-section">
+            <h3 class="demo-title">☸️ Full Kubernetes Deployment</h3>
+            <p class="demo-description">
+                For the complete experience with auto-scaling, self-healing, and monitoring:
+            </p>
+
+            <div class="demo-steps">
+                <div class="demo-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Start Minikube Cluster</h4>
+                        <div class="demo-code">
+                            <pre>minikube start --memory=4096 --cpus=2
+minikube addons enable ingress
+minikube addons enable metrics-server</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Deploy All Resources</h4>
+                        <div class="demo-code">
+                            <pre>kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/hpa.yaml</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Deploy Monitoring Stack</h4>
+                        <div class="demo-code">
+                            <pre>kubectl apply -f monitoring/prometheus-config.yaml
+kubectl apply -f monitoring/prometheus-deployment.yaml
+kubectl apply -f monitoring/grafana-deployment.yaml</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Access via Port Forward</h4>
+                        <div class="demo-code">
+                            <pre>kubectl port-forward svc/anti-gravity 3000:80 -n anti-gravity
+kubectl port-forward svc/grafana 3001:3001 -n anti-gravity</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Video Placeholder -->
+        <section class="demo-section">
+            <h3 class="demo-title">📹 Video Walkthrough</h3>
+            <div class="video-placeholder">
+                <div class="icon">🎥</div>
+                <h4>Coming Soon</h4>
+                <p>A complete video tutorial showing the platform in action</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">🚀</span>
+                    <span>Anti-Gravity DevOps Platform</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/Jani-shiv/anti-gravity-devops" target="_blank">
+                        GitHub
+                    </a>
+                    <a href="/health" target="_blank">💓 Health</a>
+                    <a href="/metrics" target="_blank">📊 Metrics</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for DevOps Engineers | Defying gravity, one pod at a time</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

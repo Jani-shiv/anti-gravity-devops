@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn DevOps - Anti-Gravity DevOps Platform</title>
+    <meta name="description" content="Learn Kubernetes, Docker, and DevOps concepts with hands-on examples">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Learn Page Specific Styles */
+        .demo-nav {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .demo-nav a {
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .demo-nav a:hover, .demo-nav a.active {
+            background: var(--gradient-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .learn-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+            backdrop-filter: blur(10px);
+        }
+
+        .learn-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .concept-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+
+        .concept-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .concept-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-sm);
+        }
+
+        .concept-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: var(--space-md);
+        }
+
+        .concept-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .concept-link:hover {
+            text-decoration: underline;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--space-lg);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: var(--space-md);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg-glass);
+        }
+
+        .gravity-label {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-sm);
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-danger);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+        }
+
+        .anti-gravity-label {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-sm);
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-success);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+
+        .skill-badge {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-badge:hover {
+            border-color: var(--accent-primary);
+            background: var(--gradient-glow);
+        }
+
+        .skill-icon {
+            font-size: 1.5rem;
+        }
+
+        .file-tree {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: #0d0d0d;
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+        }
+
+        .file-tree-item {
+            padding: var(--space-xs) 0;
+            color: var(--text-secondary);
+        }
+
+        .file-tree-item.folder {
+            color: var(--accent-primary);
+        }
+
+        .file-tree-item.file {
+            color: var(--accent-tertiary);
+        }
+
+        .quiz-section {
+            margin-top: var(--space-xl);
+        }
+
+        .quiz-question {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .quiz-question h5 {
+            margin-bottom: var(--space-md);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .quiz-option {
+            padding: var(--space-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--accent-success);
+        }
+
+        .quiz-option.wrong {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: var(--accent-danger);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="demo-nav">
+            <a href="index.html">🏠 Dashboard</a>
+            <a href="demo.html">🎬 Live Demo</a>
+            <a href="learn.html" class="active">📚 Learn</a>
+            <a href="/api" target="_blank">🔌 API</a>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero" style="padding: var(--space-xl) 0;">
+            <h2 class="hero-title">
+                <span class="gradient-text">📚 Learn DevOps</span>
+            </h2>
+            <p class="hero-subtitle">
+                Master Kubernetes, Docker, and modern DevOps practices
+            </p>
+        </section>
+
+        <!-- Skills You'll Learn -->
+        <section class="learn-section">
+            <h3 class="learn-title">🎯 Skills You'll Master</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-lg);">
+                This project covers the most in-demand DevOps skills that employers look for:
+            </p>
+
+            <div class="skills-list">
+                <div class="skill-badge">
+                    <span class="skill-icon">☸️</span>
+                    <span>Kubernetes</span>
+                </div>
+                <div class="skill-badge">
+                    <span class="skill-icon">🐳</span>
+                    <span>Docker</span>
+                </div>
+                <div class="skill-badge">
+                    <span class="skill-icon">🔄</span>
+                    <span>CI/CD Pipelines</span>
+                </div>
+                <div class="skill-badge">
+                    <span class="skill-icon">📊</span>
+                    <span>Prometheus</span>
+                </div>
+                <div class="skill-badge">
+                    <span class="skill-icon">📈</span>
+                    <span>Grafana</span>
+                </div>
+                <div class="skill-badge">
+                    <span class="skill-icon">🔥</span>
+                    <span>Chaos Engineering</span>
+                </div>
+                <div class="skill-badge">
+                    <span class="skill-icon">💓</span>
+                    <span>Health Probes</span>
+                </div>
+                <div class="skill-badge">
+                    <span class="skill-icon">⚡</span>
+                    <span>Auto-Scaling (HPA)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Concepts -->
+        <section class="learn-section">
+            <h3 class="learn-title">🧠 Core Concepts</h3>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-icon">💓</div>
+                    <h4>Liveness Probes</h4>
+                    <p>
+                        Kubernetes checks if your application is alive every 15 seconds. 
+                        If it fails 3 times, the pod is automatically restarted.
+                        This is like a heart monitor for your containers!
+                    </p>
+                    <a href="#" class="concept-link">See in deployment.yaml →</a>
+                </div>
+
+                <div class="concept-card">
+                    <div class="concept-icon">🔍</div>
+                    <h4>Readiness Probes</h4>
+                    <p>
+                        Before sending traffic to a pod, Kubernetes checks if it's ready. 
+                        This prevents users from hitting pods that are still starting up
+                        or experiencing issues.
+                    </p>
+                    <a href="#" class="concept-link">See in deployment.yaml →</a>
+                </div>
+
+                <div class="concept-card">
+                    <div class="concept-icon">📈</div>
+                    <h4>Horizontal Pod Autoscaler</h4>
+                    <p>
+                        HPA monitors CPU usage and automatically scales pods. 
+                        When CPU exceeds 50%, new pods are created. When load drops, 
+                        pods are removed. Auto-scaling magic!
+                    </p>
+                    <a href="#" class="concept-link">See in hpa.yaml →</a>
+                </div>
+
+                <div class="concept-card">
+                    <div class="concept-icon">🔀</div>
+                    <h4>Rolling Updates</h4>
+                    <p>
+                        Deploy new versions without downtime. Kubernetes gradually 
+                        replaces old pods with new ones, ensuring your application 
+                        is always available during updates.
+                    </p>
+                    <a href="#" class="concept-link">See strategy in deployment.yaml →</a>
+                </div>
+
+                <div class="concept-card">
+                    <div class="concept-icon">🌐</div>
+                    <h4>Ingress Controller</h4>
+                    <p>
+                        The entry point for external traffic. Ingress routes requests
+                        to the right service based on hostname or path, with TLS 
+                        termination and load balancing.
+                    </p>
+                    <a href="#" class="concept-link">See in ingress.yaml →</a>
+                </div>
+
+                <div class="concept-card">
+                    <div class="concept-icon">📊</div>
+                    <h4>Prometheus Metrics</h4>
+                    <p>
+                        Export custom metrics from your application. Prometheus scrapes
+                        these metrics, enabling alerting and visualization in Grafana
+                        dashboards.
+                    </p>
+                    <a href="#" class="concept-link">See /metrics endpoint →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Anti-Gravity Analogy -->
+        <section class="learn-section">
+            <h3 class="learn-title">⚖️ The Anti-Gravity Analogy</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-lg);">
+                Understanding why we call it "Anti-Gravity" - it's all about resisting failure:
+            </p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th><span class="gravity-label">🔻 Gravity (Problem)</span></th>
+                        <th><span class="anti-gravity-label">🔺 Anti-Gravity (Solution)</span></th>
+                        <th>How It Works</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pod crashes unexpectedly</td>
+                        <td>Kubernetes auto-restart</td>
+                        <td>Liveness probe detects failure → Pod restarted in seconds</td>
+                    </tr>
+                    <tr>
+                        <td>Traffic spike overwhelms server</td>
+                        <td>HPA auto-scaling</td>
+                        <td>CPU > 50% → New pods created automatically</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment introduces bugs</td>
+                        <td>Rolling updates + Rollback</td>
+                        <td>Canary deployment → Easy rollback if issues detected</td>
+                    </tr>
+                    <tr>
+                        <td>Memory leak crashes node</td>
+                        <td>Resource limits</td>
+                        <td>Container killed before affecting other workloads</td>
+                    </tr>
+                    <tr>
+                        <td>Silent failures go unnoticed</td>
+                        <td>Prometheus + Grafana</td>
+                        <td>Real-time monitoring → Alerts before users notice</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Project Structure -->
+        <section class="learn-section">
+            <h3 class="learn-title">📁 Project Structure Explained</h3>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-lg);">
+                Understanding how all the pieces fit together:
+            </p>
+
+            <div class="file-tree">
+                <div class="file-tree-item folder">📁 anti-gravity-devops/</div>
+                <div class="file-tree-item folder" style="margin-left: 20px;">├── 📁 .github/workflows/  → CI/CD with GitHub Actions</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   └── ci-cd.yml         → Test, Build, Push, Deploy pipeline</div>
+                <div class="file-tree-item folder" style="margin-left: 20px;">├── 📁 docker/             → Container configuration</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   └── Dockerfile         → Multi-stage build for production</div>
+                <div class="file-tree-item folder" style="margin-left: 20px;">├── 📁 k8s/                → Kubernetes manifests</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   ├── namespace.yaml     → Isolate resources</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   ├── deployment.yaml    → Pod specs + probes</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   ├── service.yaml       → Internal load balancer</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   ├── ingress.yaml       → External access</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   └── hpa.yaml           → Auto-scaling rules</div>
+                <div class="file-tree-item folder" style="margin-left: 20px;">├── 📁 monitoring/         → Observability stack</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   ├── prometheus-*.yaml  → Metrics collection</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   └── grafana-*.yaml     → Dashboards</div>
+                <div class="file-tree-item folder" style="margin-left: 20px;">├── 📁 public/             → Dashboard UI</div>
+                <div class="file-tree-item folder" style="margin-left: 20px;">├── 📁 src/                → Application code</div>
+                <div class="file-tree-item file" style="margin-left: 40px;">│   └── app.js             → Express.js server</div>
+                <div class="file-tree-item folder" style="margin-left: 20px;">└── 📁 tests/              → Unit tests</div>
+            </div>
+        </section>
+
+        <!-- Quick Quiz -->
+        <section class="learn-section">
+            <h3 class="learn-title">🧪 Quick Knowledge Check</h3>
+            
+            <div class="quiz-section">
+                <div class="quiz-question">
+                    <h5>1. What happens when a liveness probe fails 3 times?</h5>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A) Kubernetes sends an alert</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">B) Traffic is redirected</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">C) The pod is automatically restarted</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D) Nothing happens</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h5>2. When does HPA scale up pods in this project?</h5>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A) When memory exceeds 80%</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">B) When CPU exceeds 50%</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C) Every 5 minutes</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D) When network traffic spikes</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h5>3. What is the purpose of the /metrics endpoint?</h5>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A) Display HTML dashboard</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">B) Expose metrics for Prometheus to scrape</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C) Check application health</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D) Log errors to console</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Next Steps -->
+        <section class="learn-section">
+            <h3 class="learn-title">🚀 Next Steps</h3>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-icon">1️⃣</div>
+                    <h4>Clone & Run Locally</h4>
+                    <p>Start with npm start to see the dashboard and API endpoints in action.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">2️⃣</div>
+                    <h4>Deploy to Minikube</h4>
+                    <p>Experience auto-scaling and self-healing with a real Kubernetes cluster.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">3️⃣</div>
+                    <h4>Run Chaos Tests</h4>
+                    <p>Delete pods and generate load to see anti-gravity mechanisms in action.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">4️⃣</div>
+                    <h4>Customize & Extend</h4>
+                    <p>Add your own features, modify the pipeline, or deploy to cloud.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">🚀</span>
+                    <span>Anti-Gravity DevOps Platform</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/Jani-shiv/anti-gravity-devops" target="_blank">GitHub</a>
+                    <a href="/health" target="_blank">💓 Health</a>
+                    <a href="/metrics" target="_blank">📊 Metrics</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for DevOps Engineers | Defying gravity, one pod at a time</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function checkAnswer(element, isCorrect) {
+            // Reset all options in this question
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'wrong');
+            });
+            
+            // Mark selected answer
+            if (isCorrect) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('wrong');
+                // Show correct answer
+                options.forEach(opt => {
+                    if (opt.onclick.toString().includes('true')) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
