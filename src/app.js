@@ -14,6 +14,7 @@
 
 const express = require('express');
 const client = require('prom-client');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -79,18 +80,30 @@ app.use((req, res, next) => {
 // JSON parsing middleware
 app.use(express.json());
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../public')));
+
 // ============================================================================
 // ROUTES
 // ============================================================================
 
 /**
  * GET /
- * Welcome endpoint with system information
+ * Visual Dashboard
  * 
- * Purpose: Provides a friendly landing page showing the pod information.
- * This helps visualize load balancing when multiple pods are running.
+ * Purpose: Serves the stunning visual dashboard for the platform.
+ * The dashboard shows real-time health, load testing UI, and architecture.
  */
-app.get('/', (req, res) => {
+// Root route is handled by static file serving (public/index.html)
+
+/**
+ * GET /api
+ * API endpoint with system information (JSON)
+ * 
+ * Purpose: Provides system info in JSON format for programmatic access.
+ * This is the original API endpoint for non-browser clients.
+ */
+app.get('/api', (req, res) => {
   res.json({
     application: 'Anti-Gravity DevOps Platform',
     version: '1.0.0',
@@ -99,6 +112,8 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     endpoints: {
+      dashboard: '/ - Visual Dashboard',
+      api: '/api - System info (JSON)',
       health: '/health - Kubernetes health probes',
       load: '/load?duration=5 - CPU stress test (duration in seconds)',
       metrics: '/metrics - Prometheus metrics'

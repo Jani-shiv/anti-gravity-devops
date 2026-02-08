@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anti-Gravity DevOps Platform</title>
+    <meta
+      name="description"
+      content="Self-healing, auto-scaling, fault-tolerant infrastructure demonstration"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+      <div class="floating-orb orb-1"></div>
+      <div class="floating-orb orb-2"></div>
+      <div class="floating-orb orb-3"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+              <path d="M8 12h8" stroke-dasharray="2 2" />
+            </svg>
+          </div>
+          <div class="logo-text">
+            <h1>Anti-Gravity</h1>
+            <span>DevOps Platform</span>
+          </div>
+        </div>
+        <div class="header-status">
+          <div class="status-indicator online" id="status-indicator">
+            <span class="pulse"></span>
+            <span id="status-text">Connecting...</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <h2 class="hero-title">
+            <span class="gradient-text">Defying Gravity</span>
+            <br />One Pod at a Time
+          </h2>
+          <p class="hero-subtitle">
+            Self-healing • Auto-scaling • Fault-tolerant Infrastructure
+          </p>
+          <div class="hero-tagline">
+            <span class="tagline-icon">⚡</span>
+            Just as anti-gravity resists the pull of falling, this platform
+            resists the pull of failure.
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Dashboard -->
+      <section class="dashboard">
+        <div class="stats-grid">
+          <div class="stat-card" id="uptime-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-content">
+              <span class="stat-value" id="uptime">0s</span>
+              <span class="stat-label">Uptime</span>
+            </div>
+            <div class="stat-trend up">↑ Stable</div>
+          </div>
+
+          <div class="stat-card" id="memory-card">
+            <div class="stat-icon">💾</div>
+            <div class="stat-content">
+              <span class="stat-value" id="memory">0 MB</span>
+              <span class="stat-label">Memory Used</span>
+            </div>
+            <div class="stat-progress">
+              <div class="progress-bar" id="memory-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="stat-card" id="requests-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <span class="stat-value" id="requests">0</span>
+              <span class="stat-label">Total Requests</span>
+            </div>
+            <div class="stat-trend up">↑ Active</div>
+          </div>
+
+          <div class="stat-card" id="hostname-card">
+            <div class="stat-icon">🖥️</div>
+            <div class="stat-content">
+              <span class="stat-value" id="hostname">-</span>
+              <span class="stat-label">Pod Hostname</span>
+            </div>
+            <div class="stat-badge">Running</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Load Test Section -->
+      <section class="load-test-section">
+        <div class="section-header">
+          <h3>🔥 Gravity Simulator</h3>
+          <p>
+            Generate CPU load to trigger auto-scaling (HPA will scale pods when
+            CPU > 50%)
+          </p>
+        </div>
+
+        <div class="load-controls">
+          <div class="duration-selector">
+            <label>Load Duration</label>
+            <div class="duration-buttons">
+              <button class="duration-btn" data-duration="2">2s</button>
+              <button class="duration-btn active" data-duration="5">5s</button>
+              <button class="duration-btn" data-duration="10">10s</button>
+              <button class="duration-btn" data-duration="20">20s</button>
+            </div>
+          </div>
+
+          <button class="load-btn" id="load-btn">
+            <span class="btn-icon">🚀</span>
+            <span class="btn-text">Apply Gravity</span>
+            <span class="btn-loading">
+              <svg class="spinner" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke-width="3" fill="none" />
+              </svg>
+              Stressing CPU...
+            </span>
+          </button>
+        </div>
+
+        <div class="load-result hidden" id="load-result">
+          <div class="result-header">
+            <span class="result-icon">✅</span>
+            <span class="result-title">Load Test Completed</span>
+          </div>
+          <div class="result-stats">
+            <div class="result-stat">
+              <span class="result-value" id="result-duration">-</span>
+              <span class="result-label">Duration</span>
+            </div>
+            <div class="result-stat">
+              <span class="result-value" id="result-iterations">-</span>
+              <span class="result-label">Iterations</span>
+            </div>
+            <div class="result-stat">
+              <span class="result-value" id="result-pod">-</span>
+              <span class="result-label">Pod</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Anti-Gravity Features -->
+      <section class="features-section">
+        <div class="section-header">
+          <h3>🛡️ Anti-Gravity Mechanisms</h3>
+          <p>How this platform defies failure</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">💓</div>
+            <h4>Liveness Probes</h4>
+            <p>
+              Kubernetes monitors health every 15s. Failed pods are
+              automatically restarted.
+            </p>
+            <div class="feature-badge">Self-Healing</div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h4>Auto-Scaling (HPA)</h4>
+            <p>
+              When CPU exceeds 50%, new pods are automatically created. Scales
+              2-10 pods.
+            </p>
+            <div class="feature-badge">Elastic</div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h4>Rolling Updates</h4>
+            <p>Zero-downtime deployments with gradual pod replacement.</p>
+            <div class="feature-badge">Zero Downtime</div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h4>Prometheus Metrics</h4>
+            <p>Real-time observability with custom application metrics.</p>
+            <div class="feature-badge">Observable</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- API Endpoints -->
+      <section class="endpoints-section">
+        <div class="section-header">
+          <h3>🔌 API Endpoints</h3>
+          <p>Explore the platform's capabilities</p>
+        </div>
+
+        <div class="endpoints-list">
+          <div class="endpoint-card" onclick="testEndpoint('/')">
+            <div class="endpoint-method get">GET</div>
+            <div class="endpoint-path">/</div>
+            <div class="endpoint-desc">Welcome & system info</div>
+            <div class="endpoint-action">Try it →</div>
+          </div>
+
+          <div class="endpoint-card" onclick="testEndpoint('/health')">
+            <div class="endpoint-method get">GET</div>
+            <div class="endpoint-path">/health</div>
+            <div class="endpoint-desc">Kubernetes liveness probe</div>
+            <div class="endpoint-action">Try it →</div>
+          </div>
+
+          <div class="endpoint-card" onclick="testEndpoint('/ready')">
+            <div class="endpoint-method get">GET</div>
+            <div class="endpoint-path">/ready</div>
+            <div class="endpoint-desc">Kubernetes readiness probe</div>
+            <div class="endpoint-action">Try it →</div>
+          </div>
+
+          <div class="endpoint-card" onclick="testEndpoint('/metrics')">
+            <div class="endpoint-method get">GET</div>
+            <div class="endpoint-path">/metrics</div>
+            <div class="endpoint-desc">Prometheus metrics</div>
+            <div class="endpoint-action">Try it →</div>
+          </div>
+        </div>
+
+        <div class="response-viewer hidden" id="response-viewer">
+          <div class="response-header">
+            <span id="response-title">Response</span>
+            <button class="close-btn" onclick="closeResponse()">✕</button>
+          </div>
+          <pre id="response-content"></pre>
+        </div>
+      </section>
+
+      <!-- Architecture Diagram -->
+      <section class="architecture-section">
+        <div class="section-header">
+          <h3>🏗️ Architecture</h3>
+          <p>Production-grade Kubernetes deployment</p>
+        </div>
+
+        <div class="architecture-diagram">
+          <div class="arch-layer layer-ingress">
+            <div class="layer-label">Ingress Layer</div>
+            <div class="arch-box ingress">
+              <span class="box-icon">🌐</span>
+              NGINX Ingress
+            </div>
+          </div>
+
+          <div class="arch-arrow">↓</div>
+
+          <div class="arch-layer layer-service">
+            <div class="layer-label">Service Layer</div>
+            <div class="arch-box service">
+              <span class="box-icon">🔀</span>
+              ClusterIP Service
+            </div>
+          </div>
+
+          <div class="arch-arrow">↓</div>
+
+          <div class="arch-layer layer-pods">
+            <div class="layer-label">Pod Layer (HPA: 2-10)</div>
+            <div class="pods-container">
+              <div class="arch-box pod">
+                <span class="box-icon">📦</span>
+                Pod 1
+              </div>
+              <div class="arch-box pod">
+                <span class="box-icon">📦</span>
+                Pod 2
+              </div>
+              <div class="arch-box pod pod-scaling">
+                <span class="box-icon">📦</span>
+                Pod N...
+              </div>
+            </div>
+          </div>
+
+          <div class="arch-sidebar">
+            <div class="arch-box monitoring">
+              <span class="box-icon">📊</span>
+              Prometheus
+            </div>
+            <div class="arch-box monitoring">
+              <span class="box-icon">📈</span>
+              Grafana
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <span class="footer-logo">🚀</span>
+            <span>Anti-Gravity DevOps Platform</span>
+          </div>
+          <div class="footer-links">
+            <a
+              href="https://github.com/Jani-shiv/anti-gravity-devops"
+              target="_blank"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="currentColor"
+              >
+                <path
+                  d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+                />
+              </svg>
+              GitHub
+            </a>
+            <a href="/metrics" target="_blank">📊 Metrics</a>
+            <a href="/health" target="_blank">💓 Health</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            Built with ❤️ for DevOps Engineers | Defying gravity, one pod at a
+            time
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
