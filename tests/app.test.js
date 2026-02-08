@@ -18,13 +18,28 @@ const app = require('../src/app');
 describe('Anti-Gravity DevOps Platform', () => {
   
   // ============================================================================
-  // WELCOME ENDPOINT TESTS
+  // DASHBOARD ENDPOINT TESTS
   // ============================================================================
   
-  describe('GET /', () => {
-    it('should return welcome message with application info', async () => {
+  describe('GET / (Dashboard)', () => {
+    it('should return HTML dashboard', async () => {
       const response = await request(app)
         .get('/')
+        .expect('Content-Type', /html/)
+        .expect(200);
+      
+      expect(response.text).toContain('Anti-Gravity');
+    });
+  });
+
+  // ============================================================================
+  // API ENDPOINT TESTS
+  // ============================================================================
+  
+  describe('GET /api', () => {
+    it('should return welcome message with application info', async () => {
+      const response = await request(app)
+        .get('/api')
         .expect('Content-Type', /json/)
         .expect(200);
       
@@ -37,7 +52,7 @@ describe('Anti-Gravity DevOps Platform', () => {
 
     it('should include all available endpoints in response', async () => {
       const response = await request(app)
-        .get('/')
+        .get('/api')
         .expect(200);
       
       expect(response.body.endpoints).toHaveProperty('health');
