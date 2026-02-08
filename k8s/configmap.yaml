@@ -1,0 +1,28 @@
+# ==============================================================================
+# Kubernetes ConfigMap
+# ==============================================================================
+# ConfigMaps store non-sensitive configuration data.
+# This allows us to change configuration without rebuilding the image.
+# 
+# Use ConfigMaps for: Application settings, feature flags, endpoints
+# Use Secrets for: Passwords, API keys, certificates
+# ==============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anti-gravity-config
+  namespace: anti-gravity
+  labels:
+    app: anti-gravity
+data:
+  # Application configuration
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  
+  # Feature flags
+  ENABLE_METRICS: "true"
+  ENABLE_HEALTH_DETAILS: "true"
+  
+  # Performance tuning
+  MAX_LOAD_DURATION: "30"

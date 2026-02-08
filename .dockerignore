@@ -1,0 +1,62 @@
+# ==============================================================================
+# Docker Ignore File
+# ==============================================================================
+# These files and directories are excluded from the Docker build context.
+# This makes builds faster and prevents sensitive/unnecessary files from
+# being included in the image.
+# ==============================================================================
+
+# Version control
+.git
+.gitignore
+
+# Dependencies (will be installed fresh in container)
+node_modules
+
+# Documentation
+*.md
+docs/
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test files and coverage
+tests/
+coverage/
+.nyc_output/
+
+# CI/CD configuration
+.github/
+
+# Kubernetes manifests (not needed in app container)
+k8s/
+
+# Monitoring configurations
+monitoring/
+
+# Scripts (used externally, not in container)
+scripts/
+
+# Docker files (prevent recursive inclusion)
+docker/
+Dockerfile*
+
+# Environment files (secrets should not be in image)
+.env
+.env.*
+*.env
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/

@@ -1,0 +1,85 @@
+# ==============================================================================
+# Horizontal Pod Autoscaler (HPA)
+# ==============================================================================
+# The HPA automatically scales the number of pods based on observed metrics
+# (typically CPU or memory usage). This is the core "Anti-Gravity" mechanism.
+#
+# How it works:
+# 1. HPA monitors pod metrics via Metrics Server
+# 2. When average CPU exceeds target (50%), HPA increases replicas
+# 3. When load decreases, HPA scales down (respects minReplicas)
+# 4. Scaling is gradual to prevent thrashing
+#
+# The "Anti-Gravity" Analogy:
+# - Gravity = Load/Traffic pulling your system down
+# - Anti-Gravity = HPA pushing back by adding more pods
+# - The system automatically finds equilibrium
+#
+# Prerequisites:
+# - Metrics Server must be installed in the cluster
+# - For minikube: minikube addons enable metrics-server
+# ==============================================================================
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: anti-gravity-hpa
+  namespace: anti-gravity
+  labels:
+    app: anti-gravity
+spec:
+  # Reference to the Deployment to scale
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: anti-gravity
+  
+  # Scaling boundaries
+  minReplicas: 2    # Always maintain at least 2 pods for high availability
+  maxReplicas: 10   # Maximum pods regardless of load
+  
+  # Metrics to monitor
+  metrics:
+    # CPU-based scaling (primary)
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          # Scale up when average CPU usage exceeds 50%
+          # This gives headroom before pods become overloaded
+          averageUtilization: 50
+    
+    # Memory-based scaling (secondary)
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70
+  
+  # Scaling behavior configuration
+  behavior:
+    # Scale UP behavior - relatively aggressive
+    scaleUp:
+      stabilizationWindowSeconds: 30  # Wait 30s before scaling up again
+      policies:
+        - type: Percent
+          value: 100                  # Can double the pods
+          periodSeconds: 30
+        - type: Pods
+          value: 4                    # Or add up to 4 pods
+          periodSeconds: 30
+      selectPolicy: Max               # Use whichever adds more pods
+    
+    # Scale DOWN behavior - conservative (prevent thrashing)
+    scaleDown:
+      stabilizationWindowSeconds: 300 # Wait 5 minutes before scaling down
+      policies:
+        - type: Percent
+          value: 50                   # Remove at most 50% of pods
+          periodSeconds: 60
+        - type: Pods
+          value: 1                    # Or remove 1 pod at a time
+          periodSeconds: 60
+      selectPolicy: Min               # Use whichever removes fewer pods

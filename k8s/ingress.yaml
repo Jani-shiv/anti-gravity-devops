@@ -1,0 +1,96 @@
+# ==============================================================================
+# Kubernetes Ingress (NGINX Ingress Controller)
+# ==============================================================================
+# Ingress exposes HTTP and HTTPS routes from outside the cluster to Services.
+# It provides:
+# - Load balancing
+# - SSL/TLS termination
+# - Name-based virtual hosting
+# - Path-based routing
+#
+# Prerequisites:
+# - NGINX Ingress Controller must be installed in the cluster
+# - For local development: minikube addons enable ingress
+# ==============================================================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: anti-gravity
+  namespace: anti-gravity
+  labels:
+    app: anti-gravity
+  annotations:
+    # NGINX-specific annotations
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    
+    # Rate limiting (optional but recommended for production)
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    
+    # Timeouts
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    
+    # Enable CORS (if needed)
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  ingressClassName: nginx
+  
+  rules:
+    # Rule 1: Domain-based routing
+    # For production, replace with your actual domain
+    - host: anti-gravity.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: anti-gravity
+                port:
+                  number: 80
+    
+    # Rule 2: IP-based routing (for local development)
+    # Matches any host
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: anti-gravity
+                port:
+                  number: 80
+
+---
+# ==============================================================================
+# For TLS/HTTPS (Production)
+# ==============================================================================
+# Uncomment and configure when ready for HTTPS
+#
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: anti-gravity-tls
+#   namespace: anti-gravity
+#   annotations:
+#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#     - hosts:
+#         - anti-gravity.yourdomain.com
+#       secretName: anti-gravity-tls
+#   rules:
+#     - host: anti-gravity.yourdomain.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: anti-gravity
+#                 port:
+#                   number: 80

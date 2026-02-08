@@ -1,0 +1,15 @@
+# ==============================================================================
+# Kubernetes Namespace
+# ==============================================================================
+# A namespace provides isolation for our application resources.
+# This is a best practice for organizing resources and applying policies.
+# ==============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: anti-gravity
+  labels:
+    app: anti-gravity
+    environment: production
+    project: anti-gravity-devops

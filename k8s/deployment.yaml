@@ -1,0 +1,158 @@
+# ==============================================================================
+# Kubernetes Deployment
+# ==============================================================================
+# The Deployment manages ReplicaSets and ensures the desired number of pods
+# are running at all times. This is the "anti-gravity" in action - if a pod
+# fails, Kubernetes automatically creates a new one.
+#
+# Key Features:
+# - Liveness Probe: Restarts unhealthy pods
+# - Readiness Probe: Routes traffic only to ready pods
+# - Resource Limits: Prevents resource exhaustion
+# - Rolling Updates: Zero-downtime deployments
+# ==============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anti-gravity
+  namespace: anti-gravity
+  labels:
+    app: anti-gravity
+    version: v1
+spec:
+  # Initial replica count (HPA will adjust this)
+  replicas: 2
+  
+  # How the deployment identifies pods to manage
+  selector:
+    matchLabels:
+      app: anti-gravity
+  
+  # Deployment strategy for zero-downtime updates
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # Maximum pods unavailable during update
+      maxUnavailable: 1
+      # Maximum extra pods during update
+      maxSurge: 1
+  
+  template:
+    metadata:
+      labels:
+        app: anti-gravity
+        version: v1
+      annotations:
+        # Prometheus scraping configuration
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Graceful shutdown handling
+      terminationGracePeriodSeconds: 30
+      
+      containers:
+        - name: anti-gravity
+          # Image will be updated by CI/CD pipeline
+          image: ghcr.io/OWNER/REPO:latest
+          imagePullPolicy: Always
+          
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          
+          # Environment variables from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: anti-gravity-config
+          
+          # Individual environment variables
+          env:
+            - name: PORT
+              value: "3000"
+            # Pod name as hostname (useful for debugging)
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          
+          # ==================================================================
+          # RESOURCE MANAGEMENT
+          # ==================================================================
+          # Requests: Guaranteed resources for the container
+          # Limits: Maximum resources the container can use
+          # 
+          # These are CRITICAL for HPA to work correctly!
+          # HPA calculates CPU % based on requests, not limits
+          # ==================================================================
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"      # 100 millicores = 0.1 CPU
+            limits:
+              memory: "256Mi"
+              cpu: "500m"      # 500 millicores = 0.5 CPU
+          
+          # ==================================================================
+          # LIVENESS PROBE
+          # ==================================================================
+          # Determines if the container is running properly.
+          # If this probe fails, Kubernetes RESTARTS the container.
+          # 
+          # This is the "anti-gravity" mechanism that prevents your
+          # application from staying in a failed state.
+          # ==================================================================
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10      # Wait before first check
+            periodSeconds: 15            # Check every 15 seconds
+            timeoutSeconds: 5            # Timeout after 5 seconds
+            failureThreshold: 3          # Restart after 3 failures
+            successThreshold: 1          # 1 success = healthy
+          
+          # ==================================================================
+          # READINESS PROBE
+          # ==================================================================
+          # Determines if the container is ready to receive traffic.
+          # If this probe fails, the pod is removed from Service endpoints.
+          # 
+          # Unlike liveness probe, this doesn't restart the pod.
+          # It just stops routing traffic to it until it's ready again.
+          # ==================================================================
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5       # Wait before first check
+            periodSeconds: 10            # Check every 10 seconds
+            timeoutSeconds: 3            # Timeout after 3 seconds
+            failureThreshold: 3          # Unready after 3 failures
+            successThreshold: 1          # 1 success = ready
+          
+          # ==================================================================
+          # STARTUP PROBE (Optional but recommended)
+          # ==================================================================
+          # Gives the container time to start up.
+          # While this probe is failing, liveness and readiness probes
+          # are not executed.
+          # ==================================================================
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30         # 30 * 5s = 150s max startup time
+            successThreshold: 1
+          
+          # Security context for the container
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false

@@ -1,0 +1,32 @@
+{
+  "name": "anti-gravity-devops",
+  "version": "1.0.0",
+  "description": "Self-healing, auto-scaling, fault-tolerant DevOps platform",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "test": "jest --coverage --forceExit"
+  },
+  "keywords": [
+    "devops",
+    "kubernetes",
+    "docker",
+    "prometheus",
+    "grafana",
+    "auto-scaling"
+  ],
+  "author": "DevOps Engineer",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "prom-client": "^15.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
