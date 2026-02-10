@@ -32,12 +32,13 @@ app.use(helmet({
 }));
 app.use(cors());
 
-// Rate Limiting
+// Rate Limiting (skip for health/metrics endpoints used by monitoring)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Limit each IP to 1000 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => ['/health', '/ready', '/metrics'].includes(req.path),
 });
 app.use(limiter);
 
