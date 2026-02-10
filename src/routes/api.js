@@ -54,24 +54,6 @@ router.use((req, res, next) => {
 
 const HOSTNAME = process.env.HOSTNAME || 'unknown';
 
-router.get('/', (req, res) => {
-  res.json({
-    application: 'Anti-Gravity DevOps Platform',
-    version: '1.0.0',
-    description: 'Self-healing, auto-scaling, fault-tolerant infrastructure',
-    hostname: HOSTNAME,
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    endpoints: {
-      dashboard: '/ - Visual Dashboard',
-      api: '/api - System info (JSON)',
-      health: '/health - Kubernetes health probes',
-      load: '/load?duration=5 - CPU stress test (duration in seconds)',
-      metrics: '/metrics - Prometheus metrics'
-    }
-  });
-});
-
 router.get('/api', (req, res) => {
   res.json({
     application: 'Anti-Gravity DevOps Platform',

@@ -4,21 +4,31 @@
  * These tests validate the core functionality of our application.
  * In a CI/CD pipeline, these tests run automatically on every commit
  * to ensure code quality before deployment.
- * 
- * Why Testing Matters in DevOps:
- * - Catches bugs before they reach production
- * - Enables confident deployments
- * - Documents expected behavior
- * - Part of the "shift-left" testing philosophy
- * 
- * Last updated: 2026-02-08
  */
 
 const request = require('supertest');
+
+// Mock Redis before requiring app
+jest.mock('../src/redis', () => ({
+  incr: jest.fn().mockResolvedValue(42),
+  get: jest.fn().mockResolvedValue(null),
+  set: jest.fn().mockResolvedValue('OK'),
+  on: jest.fn(),
+  connect: jest.fn().mockResolvedValue(undefined),
+  disconnect: jest.fn().mockResolvedValue(undefined),
+  quit: jest.fn().mockResolvedValue(undefined),
+}));
+
+// Mock tracing to prevent OpenTelemetry from opening connections
+jest.mock('../src/tracing', () => ({
+  shutdown: jest.fn().mockResolvedValue(undefined),
+}));
+
 const app = require('../src/app');
+const redis = require('../src/redis');
 
 describe('Anti-Gravity DevOps Platform', () => {
-  
+
   // ============================================================================
   // DASHBOARD ENDPOINT TESTS
   // ============================================================================
@@ -66,10 +76,6 @@ describe('Anti-Gravity DevOps Platform', () => {
   // ============================================================================
   
   describe('GET /health', () => {
-    /**
-     * Critical test: Health endpoint must return 200 for Kubernetes probes
-     * If this fails, Kubernetes will consider the pod unhealthy and restart it
-     */
     it('should return 200 status for healthy application', async () => {
       const response = await request(app)
         .get('/health')
@@ -112,8 +118,38 @@ describe('Anti-Gravity DevOps Platform', () => {
         .expect(200);
       
       expect(response.body).toHaveProperty('timestamp');
-      // Validate ISO format
       expect(() => new Date(response.body.timestamp)).not.toThrow();
+    });
+
+    it('should include survivorCount from Redis', async () => {
+      const response = await request(app)
+        .get('/health')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('survivorCount', 42);
+      expect(redis.incr).toHaveBeenCalledWith('survivor_count');
+    });
+
+    it('should include health checks info', async () => {
+      const response = await request(app)
+        .get('/health')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('checks');
+      expect(response.body.checks).toHaveProperty('server', 'running');
+      expect(response.body.checks).toHaveProperty('memory');
+    });
+
+    it('should handle Redis errors gracefully', async () => {
+      redis.incr.mockRejectedValueOnce(new Error('Redis unavailable'));
+
+      const response = await request(app)
+        .get('/health')
+        .expect(200);
+
+      // Should still return healthy with survivorCount = 0
+      expect(response.body.status).toBe('healthy');
+      expect(response.body.survivorCount).toBe(0);
     });
   });
 
@@ -122,10 +158,6 @@ describe('Anti-Gravity DevOps Platform', () => {
   // ============================================================================
   
   describe('GET /load', () => {
-    /**
-     * Note: We use a very short duration in tests to keep test execution fast
-     * In production, this endpoint is used to stress test the system
-     */
     it('should complete load test and return status', async () => {
       const response = await request(app)
         .get('/load?duration=1')
@@ -135,7 +167,7 @@ describe('Anti-Gravity DevOps Platform', () => {
       expect(response.body.status).toBe('completed');
       expect(response.body).toHaveProperty('hostname');
       expect(response.body).toHaveProperty('iterations');
-    }, 10000); // Increase timeout for CPU-intensive test
+    }, 10000);
 
     it('should respect duration parameter', async () => {
       const duration = 1;
@@ -144,29 +176,22 @@ describe('Anti-Gravity DevOps Platform', () => {
         .expect(200);
       
       expect(response.body.requestedDuration).toBe(duration);
-      // Actual duration should be close to requested (within 0.5s tolerance)
       expect(response.body.actualDuration).toBeGreaterThanOrEqual(duration - 0.5);
     }, 10000);
 
     it('should default to 5 seconds if no duration provided', async () => {
-      // We won't actually wait 5 seconds in tests - just verify default is set
-      // This is more of a documentation test
       const response = await request(app)
         .get('/load?duration=1')
         .expect(200);
       
-      // If we sent duration=1, it should be 1, not the default 5
       expect(response.body.requestedDuration).toBe(1);
     }, 10000);
 
     it('should cap duration at 30 seconds', async () => {
-      // Request 100 seconds, should be capped at 30
-      // We use a mock here to avoid actually waiting
       const response = await request(app)
-        .get('/load?duration=1') // Use 1 for actual test
+        .get('/load?duration=1')
         .expect(200);
       
-      // The endpoint should handle large values gracefully
       expect(response.body).toHaveProperty('requestedDuration');
     }, 10000);
   });
@@ -176,16 +201,11 @@ describe('Anti-Gravity DevOps Platform', () => {
   // ============================================================================
   
   describe('GET /metrics', () => {
-    /**
-     * Metrics endpoint is critical for observability
-     * Prometheus scrapes this endpoint regularly
-     */
     it('should return Prometheus-formatted metrics', async () => {
       const response = await request(app)
         .get('/metrics')
         .expect(200);
       
-      // Prometheus metrics are plain text, not JSON
       expect(response.headers['content-type']).toMatch(/text\/plain|text\/plain; charset=utf-8/);
     });
 
@@ -194,7 +214,6 @@ describe('Anti-Gravity DevOps Platform', () => {
         .get('/metrics')
         .expect(200);
       
-      // Check for our custom metrics
       expect(response.text).toContain('http_requests_total');
       expect(response.text).toContain('http_request_duration_seconds');
     });
@@ -204,7 +223,6 @@ describe('Anti-Gravity DevOps Platform', () => {
         .get('/metrics')
         .expect(200);
       
-      // Default metrics collected by prom-client
       expect(response.text).toContain('nodejs_');
       expect(response.text).toContain('process_');
     });
@@ -231,6 +249,31 @@ describe('Anti-Gravity DevOps Platform', () => {
       
       expect(response.body).toHaveProperty('hostname');
       expect(response.body).toHaveProperty('timestamp');
+    });
+  });
+
+  // ============================================================================
+  // CHAOS ENDPOINT TESTS
+  // ============================================================================
+
+  describe('POST /chaos/kill', () => {
+    it('should return dying status without actually killing process', async () => {
+      // Mock process.exit to prevent it from actually terminating
+      const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+
+      const response = await request(app)
+        .post('/chaos/kill')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(response.body.status).toBe('dying');
+      expect(response.body).toHaveProperty('message');
+
+      // Wait briefly for the setTimeout to fire
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      expect(mockExit).toHaveBeenCalledWith(1);
+      mockExit.mockRestore();
     });
   });
 
@@ -278,12 +321,9 @@ describe('Integration Tests', () => {
   });
 
   it('should track request metrics correctly', async () => {
-    // Make some requests
-    await request(app).get('/');
     await request(app).get('/health');
     await request(app).get('/ready');
     
-    // Check metrics
     const metricsResponse = await request(app).get('/metrics');
     expect(metricsResponse.text).toContain('http_requests_total');
   });
