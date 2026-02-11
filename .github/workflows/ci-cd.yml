@@ -205,7 +205,7 @@ jobs:
       - name: 🔧 Check for Kubernetes config
         id: k8s-check
         env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG || '' }}
         run: |
           if [ -z "$KUBE_CONFIG" ]; then
             echo "configured=false" >> $GITHUB_OUTPUT
@@ -226,7 +226,7 @@ jobs:
       - name: 🔐 Configure Kubernetes credentials
         if: steps.k8s-check.outputs.configured == 'true'
         env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG || '' }}
         run: |
           mkdir -p $HOME/.kube
           echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
