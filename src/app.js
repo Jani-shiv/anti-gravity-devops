@@ -17,6 +17,11 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const logger = require('./logger');
 const apiRoutes = require('./routes/api');
+const authRoutes = require('./routes/auth');
+const { connectDB } = require('./db');
+
+// Connect to Database
+connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -70,6 +75,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // API Routes (mount at root level to preserve existing paths like /health, /load, etc.)
 app.use('/', apiRoutes);
+app.use('/api/auth', authRoutes);
 
 // ============================================================================
 // ERROR HANDLING

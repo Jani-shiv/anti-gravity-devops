@@ -52,6 +52,9 @@ router.use((req, res, next) => {
   next();
 });
 
+const fs = require('fs');
+const path = require('path');
+
 const HOSTNAME = process.env.HOSTNAME || 'unknown';
 
 router.get('/api', (req, res) => {
@@ -67,9 +70,29 @@ router.get('/api', (req, res) => {
       api: '/api - System info (JSON)',
       health: '/health - Kubernetes health probes',
       load: '/load?duration=5 - CPU stress test (duration in seconds)',
-      metrics: '/metrics - Prometheus metrics'
+      metrics: '/metrics - Prometheus metrics',
+      logs: '/api/logs - Recent server logs'
     }
   });
+});
+
+router.get('/api/logs', (req, res) => {
+  const logFile = path.join(__dirname, '../../combined.log');
+  
+  if (fs.existsSync(logFile)) {
+    // Read last 100 lines - simplified approach for demo
+    const data = fs.readFileSync(logFile, 'utf8');
+    const lines = data.split('\n').filter(line => line.length > 0).slice(-100).reverse();
+    res.json(lines.map(line => {
+      try {
+        return JSON.parse(line);
+      } catch (e) {
+        return { message: line, timestamp: new Date().toISOString() };
+      }
+    }));
+  } else {
+    res.json([{ message: 'No logs found yet.', timestamp: new Date().toISOString() }]);
+  }
 });
 
 

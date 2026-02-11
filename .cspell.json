@@ -1,0 +1,25 @@
+{
+    "version": "0.2",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "aquasecurity",
+        "buildx",
+        "configmap",
+        "kubeconfig",
+        "kubernetes",
+        "sarif",
+        "trivy",
+        "devops",
+        "techinnovate",
+        "antigravity",
+        "prom",
+        "grafana",
+        "jaeger",
+        "otlp",
+        "loki",
+        "minikube",
+        "kubectl"
+    ]
+}

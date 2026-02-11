@@ -197,7 +197,7 @@ jobs:
     
     environment: production  # Use GitHub environment for additional protection
     continue-on-error: true  # Don't fail pipeline if K8s not configured
-
+    
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
